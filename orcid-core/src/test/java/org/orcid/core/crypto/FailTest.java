@@ -24,6 +24,7 @@ public class FailTest {
 
     @Test
     public void testFail() {
+        System.out.println("This must fail");
         fail();
     }
 
