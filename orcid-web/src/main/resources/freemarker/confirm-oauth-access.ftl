@@ -33,18 +33,29 @@
 	<!-- /Freemarker and GA variables -->
 	<@security.authorize ifAnyGranted="ROLE_USER">
 	<div class="row top-header">
-		<div class="col-md-2 col-sm-6 col-xs-12">
+		<div class="col-md-2 col-sm-4 col-xs-12">
 			<div class="logo">
 	        	<h1 class="oauth_h1_margin"><a href="${aboutUri}"><img src="${staticCdn}/img/orcid-logo.png" alt="ORCID logo" /></a></h1>
 	        	<!-- <p>${springMacroRequestContext.getMessage("confirm-oauth-access.connectingresearchandresearchers")}</p> -->
 	        </div>		
 		</div>
 		
-	    <div class="col-md-4 col-sm-6 col-xs-12">	        
+	    <div class="col-md-4 col-sm-4 col-xs-12">	        
 	        <div class="row">
 	            <#include "includes/mini_id_banner.ftl"/>
 	        </div>      
-	    </div>	    
+	    </div>	
+	    
+	    <div class="col-md-6 col-sm-4 col-xs-12">
+			<div class="row">
+		 		<h2 class="oauth-title">${springMacroRequestContext.getMessage("confirm-oauth-access.connecting")} 
+		       	<span>${displayName?html}</span>
+	           	${springMacroRequestContext.getMessage("confirm-oauth-access.withOrcidRecord")} 
+	           	<span class="researcher-name">${(profile.orcidBio.personalDetails.givenNames.content?html)!} ${(profile.orcidBio.personalDetails.familyName.content?html)!}</span> 
+	           	<span><a href="" onclick="logOffReload(); return false;">(${springMacroRequestContext.getMessage("confirm-oauth-access.notYou")}?)</a></span> 
+				</h2>   
+			</div>
+		</div>    
 	</div>
 	<div class="row">
 		<div class="col-md-6">	
