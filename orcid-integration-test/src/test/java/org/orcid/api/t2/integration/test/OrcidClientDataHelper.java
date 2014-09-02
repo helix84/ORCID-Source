@@ -14,7 +14,7 @@
  *
  * =============================================================================
  */
-package org.orcid.api.t2.integration;
+package org.orcid.api.t2.integration.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -72,7 +72,6 @@ public class OrcidClientDataHelper implements InitializingBean {
         init();
     }
 
-    @SuppressWarnings( { "unchecked" })
     protected <T> T getTargetObject(Object proxy, Class<T> targetClass) throws Exception {
         return TargetProxyHelper.getTargetObject(proxy, targetClass);
     }
