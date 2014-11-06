@@ -26,7 +26,7 @@
 		
 			<#if profile.orcidInternal?? && profile.orcidInternal.preferences.developerToolsEnabled?? && profile.orcidInternal.preferences.developerToolsEnabled.value == false>
 				<h1 id="manage-developer-tools">
-					<span><@spring.message "manage.developer_tools.title"/></span>					
+					<span><@spring.message "manage.developer_tools.user.title"/></span>					
 				</h1>
 				<#if !inDelegationMode || isDelegatedByAdmin>
 					<div class="sso-api" ng-controller="SSOPreferencesCtrl">
