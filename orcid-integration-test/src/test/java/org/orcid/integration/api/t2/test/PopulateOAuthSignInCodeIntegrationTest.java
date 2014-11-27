@@ -54,5 +54,14 @@ public class PopulateOAuthSignInCodeIntegrationTest {
         webDriver.get(url);
         assertTrue(webDriver.findElements(By.xpath("//input[@name='userId']")).size() != 0);
         assertTrue(webDriver.findElements(By.xpath("//input[@name='userId2']")).size() == 0);
-    }        
+    } 
+    
+    @Test
+    public void emailPrePopulate2() throws JSONException, InterruptedException {
+        // test populating form with email that doesn't exist
+        String url = "http://ci.orcid.org:8080/signin";
+        webDriver.get(url);
+        assertTrue(webDriver.findElements(By.xpath("//input[@name='userId']")).size() != 0);
+        assertTrue(webDriver.findElements(By.xpath("//input[@name='userId2']")).size() == 0);
+    } 
 }
