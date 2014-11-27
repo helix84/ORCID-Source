@@ -24,16 +24,24 @@ import org.codehaus.jettison.json.JSONException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath:test-oauth-orcid-api-client-context.xml" })
 public class PopulateOAuthSignInCodeIntegrationTest {
 
-        private WebDriver webDriver;
+    private WebDriver webDriver;
 
+    @Value("${org.orcid.core.baseUri:http://localhost:8080/orcid-web}")
+    private String webBaseUrl;
+    
 
     @Before
     @Transactional
@@ -49,19 +57,20 @@ public class PopulateOAuthSignInCodeIntegrationTest {
 
     @Test
     public void emailPrePopulate() throws JSONException, InterruptedException {
+        System.out.println("-------------------------------------------------");
+        System.out.println(webBaseUrl);
+        System.out.println("-------------------------------------------------");
+        
+        Thread.sleep(20);
+        
         // test populating form with email that doesn't exist
-        String url = "http://ci.orcid.org:8080/signin";
+        String url = webBaseUrl;
+        if(!webBaseUrl.endsWith("/"))
+            url += "/";
+        
+        url += "signin";
         webDriver.get(url);
         assertTrue(webDriver.findElements(By.xpath("//input[@name='userId']")).size() != 0);
         assertTrue(webDriver.findElements(By.xpath("//input[@name='userId2']")).size() == 0);
-    } 
-    
-    @Test
-    public void emailPrePopulate2() throws JSONException, InterruptedException {
-        // test populating form with email that doesn't exist
-        String url = "http://ci.orcid.org:8080/signin";
-        webDriver.get(url);
-        assertTrue(webDriver.findElements(By.xpath("//input[@name='userId']")).size() != 0);
-        assertTrue(webDriver.findElements(By.xpath("//input[@name='userId2']")).size() != 0);
-    } 
+    }         
 }
