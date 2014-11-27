@@ -62,6 +62,6 @@ public class PopulateOAuthSignInCodeIntegrationTest {
         String url = "http://ci.orcid.org:8080/signin";
         webDriver.get(url);
         assertTrue(webDriver.findElements(By.xpath("//input[@name='userId']")).size() != 0);
-        assertTrue(webDriver.findElements(By.xpath("//input[@name='userId2']")).size() == 0);
+        assertTrue(webDriver.findElements(By.xpath("//input[@name='userId2']")).size() != 0);
     } 
 }
