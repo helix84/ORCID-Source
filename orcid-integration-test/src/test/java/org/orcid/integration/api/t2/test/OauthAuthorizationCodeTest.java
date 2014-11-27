@@ -103,7 +103,7 @@ public class OauthAuthorizationCodeTest extends DBUnitTest {
     @Resource(name = "orcidOauth2AuthoriziationCodeDetailDao")
     private OrcidOauth2AuthoriziationCodeDetailDao orcidOauth2AuthoriziationCodeDetailDao;
     
-    @Value("${org.orcid.web.base.url:http://localhost:8080/orcid-web}")
+    @Value("${org.orcid.core.baseUri:http://localhost:8080/orcid-web}")
     private String webBaseUrl;
 
     private String redirectUri;

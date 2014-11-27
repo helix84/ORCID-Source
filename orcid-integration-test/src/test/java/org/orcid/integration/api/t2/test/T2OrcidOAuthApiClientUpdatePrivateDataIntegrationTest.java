@@ -102,7 +102,7 @@ public class T2OrcidOAuthApiClientUpdatePrivateDataIntegrationTest extends DBUni
 
     private WebDriverHelper webDriverHelper;
 
-    @Value("${org.orcid.web.base.url:http://localhost:8080/orcid-web}")
+    @Value("${org.orcid.core.baseUri:http://localhost:8080/orcid-web}")
     private String webBaseUrl;
 
     private String redirectUri;
