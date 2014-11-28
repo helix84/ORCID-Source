@@ -38,7 +38,7 @@ public class T2OrcidApiClientImpl implements T2OrcidApiService<ClientResponse> {
 
     private OrcidClientHelper orcidClientHelper;
 
-    public T2OrcidApiClientImpl(URI baseUri, Client client) throws URISyntaxException {
+    public T2OrcidApiClientImpl(URI baseUri, Client client) throws URISyntaxException {        
         orcidClientHelper = new OrcidClientHelper(baseUri, client);
     }
 

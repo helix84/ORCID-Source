@@ -29,8 +29,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>orcid-api-common</artifactId>
             <version>${project.parent.version}</version>
-        </dependency>		
-
+        </dependency>        
         <!-- External dependencies -->
         <dependency>
             <groupId>org.springframework.security</groupId>

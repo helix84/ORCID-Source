@@ -30,9 +30,11 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.orcid.core.manager.ClientDetailsManager;
 import org.orcid.integration.api.t2.T2OAuthAPIService;
 import org.orcid.test.DBUnitTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -55,13 +57,22 @@ public class Orcid2StepOauthFlowTest extends DBUnitTest {
     @Resource(name = "t2OAuthClient")
     private T2OAuthAPIService<ClientResponse> oauthT2Client;
     
+    @Resource(name = "clientDetailsManager")
+    private ClientDetailsManager clientDetailsManager;
+    
+    
     private static final List<String> DATA_FILES = Arrays.asList("/data/EmptyEntityData.xml", "/data/SecurityQuestionEntityData.xml", "/data/SourceClientDetailsEntityData.xml", "/data/ProfileEntityData.xml",
             "/data/WorksEntityData.xml", "/data/ProfileWorksEntityData.xml", "/data/ClientDetailsEntityData.xml", "/data/Oauth2TokenDetailsData.xml",
             "/data/WebhookEntityData.xml");
 
     @BeforeClass
     public static void initDBUnitData() throws Exception {
-        initDBUnitData(DATA_FILES);
+        initDBUnitData(DATA_FILES);        
+    }
+    
+    @Before
+    public void cleanClientDetailsCache() {
+        clientDetailsManager.updateLastModified(CLIENT_DETAILS_ID);
     }
     
     @AfterClass
