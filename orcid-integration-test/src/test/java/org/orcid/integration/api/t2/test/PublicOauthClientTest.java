@@ -97,6 +97,17 @@ public class PublicOauthClientTest extends DBUnitTest {
     public void before() {
         webDriver = new FirefoxDriver();
         redirectUri = webBaseUrl + "/oauth/playground";
+        
+        System.out.println("----------------------------------------------------");
+        System.out.println(redirectUri);
+        System.out.println("----------------------------------------------------");
+        
+        try {
+            Thread.sleep(10);
+        } catch(InterruptedException e) {
+            
+        }
+        
         webDriverHelper = new WebDriverHelper(webDriver, webBaseUrl, redirectUri);
 
         // Set redirect uris if needed
