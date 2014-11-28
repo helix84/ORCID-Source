@@ -64,6 +64,10 @@ public class WebDriverHelper {
         WebElement switchFromLink = webDriver.findElement(switchFromLinkLocator);
         switchFromLink.click();
 
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("Just click on 'in-register-switch-form'");
+        System.out.println("----------------------------------------------------------------");
+        
         // Fill the form
         By userIdElementLocator = By.id("userId");
         (new WebDriverWait(webDriver, DEFAULT_TIMEOUT_SECONDS)).until(ExpectedConditions.presenceOfElementLocated(userIdElementLocator));
@@ -74,6 +78,10 @@ public class WebDriverHelper {
         WebElement submitButton = webDriver.findElement(By.id("authorize-button"));
         submitButton.click();
 
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("Just click the authorize button");
+        System.out.println("----------------------------------------------------------------");
+        
         (new WebDriverWait(webDriver, DEFAULT_TIMEOUT_SECONDS)).until(new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver d) {
                 return d.getTitle().equals("ORCID Playground");
