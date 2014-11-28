@@ -27,12 +27,12 @@
 	<context:property-placeholder file-encoding="UTF-8" location="classpath:integration-test.properties"/>
 
 	 <bean id="t1OrcidApiClient" class="org.orcid.integration.api.t1.T1OrcidApiClientImpl">
-        <constructor-arg value="${org.orcid.t1.client.base_url}"/>
+        <constructor-arg value="${org.orcid.core.pubBaseUri}"/>
         <constructor-arg ref="jerseyClient"/>
     </bean>
 
 	<bean id="t1OAuthClient" class="org.orcid.integration.api.t1.T1OAuthOrcidApiClientImpl">
-		<constructor-arg value="${org.orcid.t1.client.base_url}"/>
+		<constructor-arg value="${org.orcid.core.pubBaseUri}"/>
 		<constructor-arg ref="jerseyClient"/>
 	</bean>
 

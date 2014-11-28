@@ -68,7 +68,7 @@ public abstract class BaseT2OrcidOAuthApiClientIntegrationTest {
     @Resource
     protected Client jerseyClient;
 
-    @Value("${org.orcid.t2.client.base_url}")
+    @Value("${org.orcid.core.apiBaseUri}")
     protected URI t2BaseUrl;
 
     protected void createAccessTokenFromCredentials() throws Exception {

@@ -79,7 +79,7 @@ public class PublicOauthClientTest extends DBUnitTest {
     @Resource(name = "t1OAuthClient")
     private T1OAuthAPIService<ClientResponse> oauthT1Client;
 
-    @Value("${org.orcid.web.base.url:http://localhost:8080/orcid-web}")
+    @Value("${org.orcid.core.baseUri:http://localhost:8080/orcid-web}")
     private String webBaseUrl;
 
     private String redirectUri;
