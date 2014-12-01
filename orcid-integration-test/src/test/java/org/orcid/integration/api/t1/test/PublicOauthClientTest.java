@@ -28,6 +28,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -117,6 +118,11 @@ public class PublicOauthClientTest extends DBUnitTest {
     public void after() {
         webDriver.quit();
     }
+    
+    @AfterClass
+    public static void afterClass() throws Exception {
+        removeDBUnitData(DATA_FILES);
+    } 
 
     @Test
     public void testPublicClient() throws JSONException, InterruptedException {

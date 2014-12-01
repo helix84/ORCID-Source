@@ -71,14 +71,7 @@ public class T1OrcidApiClientIntegrationTest extends DBUnitTest {
     @BeforeClass
     public static void initDBUnitData() throws Exception {
         initDBUnitData(DATA_FILES);
-    }
-
-    @AfterClass
-    public static void afterClass() throws Exception {
-        removeDBUnitData(Arrays.asList("/data/WebhookEntityData.xml", "/data/Oauth2TokenDetailsData.xml", "/data/ClientDetailsEntityData.xml",
-                "/data/ProfileWorksEntityData.xml", "/data/WorksEntityData.xml", "/data/ProfileEntityData.xml", "/data/SecurityQuestionEntityData.xml",
-                "/data/EmptyEntityData.xml"));
-    }
+    }    
 
     @Before
     public void indexAll() {
@@ -88,6 +81,11 @@ public class T1OrcidApiClientIntegrationTest extends DBUnitTest {
         }
     }
 
+    @AfterClass
+    public static void afterClass() throws Exception {
+        removeDBUnitData(DATA_FILES);
+    } 
+    
     @Test
     public void testStatus() {
         ClientResponse clientResponse = t1Client.viewStatusText();

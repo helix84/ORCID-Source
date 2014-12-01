@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -187,6 +188,11 @@ public class T2OrcidOAuthApiAuthorizationCodeIntegrationTest extends DBUnitTest 
         webDriver.quit();
     }
 
+    @AfterClass
+    public static void afterClass() throws Exception {
+        removeDBUnitData(DATA_FILES);
+    } 
+    
     @Test
     public void testGetBioReadLimited() throws JSONException, InterruptedException {
         String scopes = "/orcid-bio/read-limited";

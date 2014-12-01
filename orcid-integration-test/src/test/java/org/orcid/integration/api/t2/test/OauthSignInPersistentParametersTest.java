@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Resource;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -120,6 +121,11 @@ public class OauthSignInPersistentParametersTest extends DBUnitTest {
         webDriver.quit();
     }
 
+    @AfterClass
+    public static void afterClass() throws Exception {
+        removeDBUnitData(DATA_FILES);
+    }
+    
     @Test
     public void stateParamIsPersistentAndReturnedTest() throws InterruptedException {
         webDriver

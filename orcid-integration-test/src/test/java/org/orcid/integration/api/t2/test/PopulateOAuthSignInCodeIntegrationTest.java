@@ -26,6 +26,7 @@ import javax.annotation.Resource;
 
 import org.codehaus.jettison.json.JSONException;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -94,6 +95,11 @@ public class PopulateOAuthSignInCodeIntegrationTest extends DBUnitTest {
         webDriver.quit();
     }
 
+    @AfterClass
+    public static void afterClass() throws Exception {
+        removeDBUnitData(DATA_FILES);
+    } 
+    
     String getBaseUrl() {
         return String.format("%s/oauth/authorize?client_id=%s&response_type=code&scope=%s&redirect_uri=%s", webBaseUrl, CLIENT_DETAILS_ID, "/orcid-bio/read-limited",
                 redirectUri);
