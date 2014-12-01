@@ -56,6 +56,16 @@ public class WebDriverHelper {
     }
 
     public String obtainAuthorizationCode(String scopes, String orcid, String userId, String password) throws InterruptedException {
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println(String.format("%s/oauth/authorize?client_id=%s&response_type=code&scope=%s&redirect_uri=%s", webBaseUrl, orcid, scopes, redirectUri));
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        
         webDriver.get(String.format("%s/oauth/authorize?client_id=%s&response_type=code&scope=%s&redirect_uri=%s", webBaseUrl, orcid, scopes, redirectUri));
 
         // Switch to the login form
@@ -64,6 +74,16 @@ public class WebDriverHelper {
         WebElement switchFromLink = webDriver.findElement(switchFromLinkLocator);
         switchFromLink.click();
 
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println("Just clicked on in-register-switch-form");
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        
         // Fill the form
         By userIdElementLocator = By.id("userId");
         (new WebDriverWait(webDriver, DEFAULT_TIMEOUT_SECONDS)).until(ExpectedConditions.presenceOfElementLocated(userIdElementLocator));
@@ -79,11 +99,44 @@ public class WebDriverHelper {
                 return d.getTitle().equals("ORCID Playground");
             }
         });
+        
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println("Just get the ORCID playground");
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        
         String currentUrl = webDriver.getCurrentUrl();
+        
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println("Current URL");
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        
         Matcher matcher = AUTHORIZATION_CODE_PATTERN.matcher(currentUrl);
         assertTrue(matcher.find());
         String authorizationCode = matcher.group(1);
         assertNotNull(authorizationCode);
+        
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println("Authorize code: " + authorizationCode);
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        
         return authorizationCode;
     }
 

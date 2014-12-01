@@ -131,6 +131,16 @@ public class PublicOauthClientTest extends DBUnitTest {
         String scopes = "/authenticate";
         String authorizationCode = webDriverHelper.obtainAuthorizationCode(scopes, CLIENT_DETAILS_ID, "michael@bentine.com", "password");
 
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println("Authorization code on test class: " + authorizationCode);
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         params.add("client_id", CLIENT_DETAILS_ID);
         params.add("client_secret", "client-secret");
@@ -138,6 +148,17 @@ public class PublicOauthClientTest extends DBUnitTest {
         params.add("scope", scopes);
         params.add("redirect_uri", redirectUri);
         params.add("code", authorizationCode);
+        
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println("About to get the token");
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        
         ClientResponse clientResponse = oauthT2Client.obtainOauth2TokenPost("client_credentials", params);
         // Should get a 400 since public client should not use the members API
         assertEquals(400, clientResponse.getStatus());
