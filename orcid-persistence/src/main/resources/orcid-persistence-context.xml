@@ -158,6 +158,12 @@
 	
 	<bean id="notificationDao" class="org.orcid.persistence.dao.impl.NotificationDaoImpl" />
     
+    <bean id="readOnlyEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
+        <property name="dataSource" ref="\${org.orcid.persistence.db.read_only.dataSource}" />
+        <property name="persistenceUnitName" value="readOnly" />
+    </bean>
+        
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="liquibase">
         <property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
         <property name="dataSource" ref="\${org.orcid.persistence.db.dataSource}" />
@@ -234,7 +240,22 @@
         <property name="preferredTestQuery" value="\${org.orcid.persistence.db.preferredTestQuery}" />
         <property name="numHelperThreads" value="\${org.orcid.persistence.db.numHelperThreads:10}"/>
     </bean>
-
+                
+    <bean id="readOnlyDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="\${org.orcid.persistence.db.class}" />
+        <property name="jdbcUrl" value="\${org.orcid.persistence.db.read_only.url}" />
+        <property name="user" value="\${org.orcid.persistence.db.username}" />
+        <property name="password" value="\${org.orcid.persistence.db.password}" />
+        <property name="initialPoolSize" value="\${org.orcid.persistence.db.initialPoolSize}" />
+        <property name="minPoolSize" value="\${org.orcid.persistence.db.minPoolSize}" />
+        <property name="maxPoolSize" value="\${org.orcid.persistence.db.maxPoolSize}" />
+        <property name="maxStatements" value="\${org.orcid.persistence.db.maxStatements}" />
+        <property name="idleConnectionTestPeriod" value="\${org.orcid.persistence.db.idleConnectionTestPeriod}" />
+        <property name="testConnectionOnCheckin" value="\${org.orcid.persistence.db.testConnectionOnCheckin}" />
+        <property name="preferredTestQuery" value="\${org.orcid.persistence.db.preferredTestQuery}" />
+        <property name="numHelperThreads" value="\${org.orcid.persistence.db.numHelperThreads:10}"/>
+    </bean>
+    
     <bean id="simpleDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="\${org.orcid.persistence.db.class}" />
         <property name="url" value="\${org.orcid.persistence.db.url}" />

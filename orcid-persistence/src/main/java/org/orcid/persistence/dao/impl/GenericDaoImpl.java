@@ -16,31 +16,33 @@
  */
 package org.orcid.persistence.dao.impl;
 
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.orcid.persistence.dao.GenericDao;
 import org.orcid.persistence.jpa.entities.OrcidEntity;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
-import javax.persistence.Query;
-
-import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 
 /**
  * orcid-persistence - Dec 7, 2011 - GenericDaoImpl
  * 
  * @author Will Simpson and Declan Newman
  */
-@PersistenceUnit(name = "entityManagerFactory")
 public class GenericDaoImpl<E extends OrcidEntity<I>, I extends Serializable> implements GenericDao<E, I> {
-
+   
     @PersistenceContext(unitName = "orcid")
     protected EntityManager entityManager;
-
+    
+    @PersistenceContext(unitName = "readOnly")
+    protected EntityManager readOnlyEntityManager;
+    
+    
     private Class<E> clazz;
 
     public GenericDaoImpl(Class<E> clazz) {
@@ -62,9 +64,9 @@ public class GenericDaoImpl<E extends OrcidEntity<I>, I extends Serializable> im
     }
 
     @SuppressWarnings("unchecked")
-    @Override
+    @Override    
     public List<E> getAll() {
-        return entityManager.createQuery("from " + clazz.getSimpleName()).getResultList();
+        return readOnlyEntityManager.createQuery("from " + clazz.getSimpleName()).getResultList();
     }
 
     @Override
