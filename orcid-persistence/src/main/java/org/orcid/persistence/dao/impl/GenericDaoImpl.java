@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.orcid.persistence.dao.GenericDao;
@@ -36,17 +35,16 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class GenericDaoImpl<E extends OrcidEntity<I>, I extends Serializable> implements GenericDao<E, I> {
    
-    @PersistenceContext(unitName = "orcid")
     protected EntityManager entityManager;
-    
-    @PersistenceContext(unitName = "readOnly")
-    protected EntityManager readOnlyEntityManager;
-    
     
     private Class<E> clazz;
 
     public GenericDaoImpl(Class<E> clazz) {
         this.clazz = clazz;
+    }
+        
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -66,7 +64,7 @@ public class GenericDaoImpl<E extends OrcidEntity<I>, I extends Serializable> im
     @SuppressWarnings("unchecked")
     @Override    
     public List<E> getAll() {
-        return readOnlyEntityManager.createQuery("from " + clazz.getSimpleName()).getResultList();
+        return entityManager.createQuery("from " + clazz.getSimpleName()).getResultList();
     }
 
     @Override
@@ -89,7 +87,7 @@ public class GenericDaoImpl<E extends OrcidEntity<I>, I extends Serializable> im
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void flush() {
         entityManager.flush();
     }

@@ -38,8 +38,8 @@ import org.springframework.transaction.annotation.Transactional;
 @PersistenceContext(unitName = "orcid")
 public class ClientDetailsDaoImpl extends GenericDaoImpl<ClientDetailsEntity, String> implements ClientDetailsDao {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClientDetailsDaoImpl.class);
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientDetailsDaoImpl.class);   
+    
     public ClientDetailsDaoImpl() {
         super(ClientDetailsEntity.class);
     }
