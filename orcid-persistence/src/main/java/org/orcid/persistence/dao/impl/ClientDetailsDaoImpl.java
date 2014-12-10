@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
@@ -35,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * @author Declan Newman
  */
-@PersistenceContext(unitName = "orcid")
 public class ClientDetailsDaoImpl extends GenericDaoImpl<ClientDetailsEntity, String> implements ClientDetailsDao {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientDetailsDaoImpl.class);   

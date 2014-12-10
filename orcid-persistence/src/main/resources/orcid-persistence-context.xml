@@ -214,7 +214,9 @@
         <property name="persistenceUnitName" value="readOnly" />
     </bean>
         	 
-    <bean id="readOnlyEntityManager" factory-bean="readOnlyEntityManagerFactory" factory-method="createEntityManager" scope="singleton" />          
+    <bean id="readOnlyEntityManager" class="org.springframework.orm.jpa.support.SharedEntityManagerBean">            
+    	<property name="entityManagerFactory" ref="readOnlyEntityManagerFactory" />
+    </bean>          
         
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="liquibase">
         <property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
@@ -222,7 +224,9 @@
         <property name="persistenceUnitName" value="orcid" />
     </bean>
     
-    <bean id="entityManager" factory-bean="entityManagerFactory" factory-method="createEntityManager" scope="singleton" />
+    <bean id="entityManager" class="org.springframework.orm.jpa.support.SharedEntityManagerBean">
+    	<property name="entityManagerFactory" ref="entityManagerFactory" />
+    </bean>
 
     <bean id="liquibase" class="liquibase.integration.spring.SpringLiquibase">
         <property name="dataSource" ref="\${org.orcid.persistence.db.dataSource}" />
