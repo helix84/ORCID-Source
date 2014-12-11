@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.orcid.persistence.dao.GenericDao;
@@ -35,27 +36,27 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class GenericDaoImpl<E extends OrcidEntity<I>, I extends Serializable> implements GenericDao<E, I> {
    
+    @PersistenceContext(unitName = "readOnly")
+    protected EntityManager readOnlyEntityManager;
+    
+    @PersistenceContext(unitName = "orcid")
     protected EntityManager entityManager;
     
     private Class<E> clazz;
 
     public GenericDaoImpl(Class<E> clazz) {
         this.clazz = clazz;
-    }
-        
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
+    }            
 
     @Override
     public E find(I id) {
-        return entityManager.find(clazz, id);
+        return readOnlyEntityManager.find(clazz, id);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public List<E> findLastModifiedBefore(Date latestDate, int maxResults) {
-        Query query = entityManager.createQuery("from " + clazz.getSimpleName() + " where lastModified <= :latestDate");
+        Query query = readOnlyEntityManager.createQuery("from " + clazz.getSimpleName() + " where lastModified <= :latestDate");
         query.setParameter("latestDate", latestDate);
         query.setMaxResults(maxResults);
         return query.getResultList();
@@ -64,7 +65,7 @@ public class GenericDaoImpl<E extends OrcidEntity<I>, I extends Serializable> im
     @SuppressWarnings("unchecked")
     @Override    
     public List<E> getAll() {
-        return entityManager.createQuery("from " + clazz.getSimpleName()).getResultList();
+        return readOnlyEntityManager.createQuery("from " + clazz.getSimpleName()).getResultList();
     }
 
     @Override
@@ -113,13 +114,13 @@ public class GenericDaoImpl<E extends OrcidEntity<I>, I extends Serializable> im
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void refresh(E e) {
-        entityManager.refresh(e);
+        readOnlyEntityManager.refresh(e);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public Long countAll() {
-        return (Long) entityManager.createQuery("select count(e) from " + clazz.getSimpleName() + " e").getSingleResult();
+        return (Long) readOnlyEntityManager.createQuery("select count(e) from " + clazz.getSimpleName() + " e").getSingleResult();
     }
 
 }

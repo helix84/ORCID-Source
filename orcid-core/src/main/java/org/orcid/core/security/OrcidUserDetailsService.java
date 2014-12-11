@@ -57,7 +57,7 @@ public class OrcidUserDetailsService implements UserDetailsService {
      *             GrantedAuthority
      */
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(value="readOnlyTransactionManager", propagation = Propagation.REQUIRED)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         ProfileEntity profile = obtainEntity(username);
 
