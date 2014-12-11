@@ -264,7 +264,7 @@
 
     <bean name="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
         <constructor-arg ref="transactionManager" />
-        <property name="propagationBehaviorName" value="PROPAGATION_SUPPORTS" />
+        <property name="propagationBehaviorName" value="PROPAGATION_REQUIRED" />
     </bean>
 
 

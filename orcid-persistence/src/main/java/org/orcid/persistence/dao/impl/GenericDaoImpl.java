@@ -87,7 +87,7 @@ public class GenericDaoImpl<E extends OrcidEntity<I>, I extends Serializable> im
     }
 
     @Override
-    @Transactional(propagation = Propagation.SUPPORTS)
+    @Transactional(propagation = Propagation.REQUIRED)
     public void flush() {
         entityManager.flush();
     }
