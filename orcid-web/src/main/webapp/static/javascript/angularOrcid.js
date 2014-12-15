@@ -96,10 +96,19 @@ GroupedActivities.prototype.getByPut = function(putCode) {
 };
 
 GroupedActivities.prototype.consistentVis = function() {
-    var vis = this.getDefault().visibility;
+    if (this.type == GroupedActivities.FUNDING)
+        var vis = this.getDefault().visibility.visibility;
+    else
+        var vis = this.getDefault().visibility;
+
     for (var idx in this.activities)
-        if (this.activities[idx].visibility != vis)
-            return false;
+        if (this.type == GroupedActivities.FUNDING) {
+            if (this.activities[idx].visibility.visibility != vis)
+                return false;
+        } else {
+            if (this.activities[idx].visibility != vis)
+                return false;
+        }
     return true;
 };
 
@@ -594,22 +603,12 @@ orcidNgModule.factory("fundingSrvc", ['$rootScope', function ($rootScope) {
                 };
             },
             createNew: function(work) {
-                var cloneW = JSON.parse(JSON.stringify(work));
-                cloneW.source = null;
-                cloneW.putCode = null;
-                return cloneW;
-            },
-            makeDefault: function(group, putCode) {
-                group.makeDefault(putCode);
-                $.ajax({
-                    url: getBaseUri() + '/fundings/updateToMaxDisplay.json?putCode=' + putCode,
-                    dataType: 'json',
-                    success: function(data) {
-                    }
-                }).fail(function(){
-                    // something bad is happening!
-                    console.log("some bad is hppending");
-                });
+                var cloneF = JSON.parse(JSON.stringify(work));
+                cloneF.source = null;
+                cloneF.putCode = null;
+                for (var idx in cloneF.externalIdentifiers)
+                    cloneF.externalIdentifiers[idx].putCode = null;
+                return cloneF;
             },
             getEditable: function(putCode, callback) {
                 // first check if they are the current source
@@ -656,12 +655,39 @@ orcidNgModule.factory("fundingSrvc", ['$rootScope', function ($rootScope) {
                     }
                 }
             },
-            setGroupPrivacy: function(putCode, priv) {
-                var group = fundingSrvc.getGroup(putCode);
-                for (var idx in group.activities) {
-                    var curPutCode = group.activities[idx].putCode.value;
-                    fundingSrvc.setPrivacy(curPutCode, priv);
+            fundingCount: function() {
+                var count = 0;
+                for (var idx in fundingSrvc.groups) {
+                    count += fundingSrvc.groups[idx].activitiesCount;
                 }
+                return count;
+            },
+            getFunding: function(putCode) {
+                for (var idx in fundingSrvc.groups) {
+                        if (fundingSrvc.groups[idx].hasPut(putCode))
+                            return fundingSrvc.groups[idx].getByPut(putCode);
+                }
+                return null;
+            },
+            getFundings: function(path) {
+                //clear out current fundings
+                fundingSrvc.loading = true;
+                fundingSrvc.fundingToAddIds = null;
+                //new way
+                fundingSrvc.groups.length = 0;
+                //get funding ids
+                $.ajax({
+                    url: getBaseUri() + '/'  + path,
+                    dataType: 'json',
+                    success: function(data) {
+                        fundingSrvc.fundingToAddIds = data;
+                        fundingSrvc.addFundingToScope('fundings/fundings.json');
+                        $rootScope.$apply();
+                    }
+                }).fail(function(){
+                    // something bad is happening!
+                    console.log("error fetching fundings");
+                });
             },
             getGroup: function(putCode) {
                 for (var idx in fundingSrvc.groups) {
@@ -670,11 +696,17 @@ orcidNgModule.factory("fundingSrvc", ['$rootScope', function ($rootScope) {
                 }
                 return null;
             },
-            setPrivacy: function(putCode, priv) {
-                var idx;
-                var funding = fundingSrvc.getFunding(putCode);
-                funding.visibility.visibility = priv;
-                fundingSrvc.updateProfileFunding(funding);
+            makeDefault: function(group, putCode) {
+                group.makeDefault(putCode);
+                $.ajax({
+                    url: getBaseUri() + '/fundings/updateToMaxDisplay.json?putCode=' + putCode,
+                    dataType: 'json',
+                    success: function(data) {
+                    }
+                }).fail(function(){
+                    // something bad is happening!
+                    console.log("some bad is hppending");
+                });
             },
             removeFunding: function(funding) {
                 $.ajax({
@@ -696,51 +728,28 @@ orcidNgModule.factory("fundingSrvc", ['$rootScope', function ($rootScope) {
                                     break;
                                 }
                             }
-
                         }
-                           $rootScope.$apply();
+                        $rootScope.$apply();
                     }
                 }).fail(function() {
                     console.log("Error deleting funding.");
                 });
             },
-            fundingCount: function() {
-                var count = 0;
-                for (var idx in fundingSrvc.groups) {
-                    count += fundingSrvc.groups[idx].activitiesCount;
-                }
-                return count;
-            },
-            getFunding: function(putCode) {
-                for (var idx in fundingSrvc.groups) {
-                        if (fundingSrvc.groups[idx].hasPut(putCode))
-                            return fundingSrvc.groups[idx].getByPut(putCode);
-                }
-                return null;
-            },
-            getFundings: function(path) {
-                //clear out current fundings
-                fundingSrvc.loading = true;
-                fundingSrvc.fundingToAddIds = null;
-
-                //new way
-                fundingSrvc.groups.length = 0;
-                //get funding ids
-                $.ajax({
-                    url: getBaseUri() + '/'  + path,
-                    dataType: 'json',
-                    success: function(data) {
-                        fundingSrvc.fundingToAddIds = data;
-                        fundingSrvc.addFundingToScope('fundings/fundings.json');
-                        $rootScope.$apply();
-                    }
-                }).fail(function(){
-                    // something bad is happening!
-                    console.log("error fetching fundings");
-                });
-            },
             setIdsToAdd: function(ids) {
                 fundingSrvc.fundingToAddIds = ids;
+            },
+            setGroupPrivacy: function(putCode, priv) {
+                var group = fundingSrvc.getGroup(putCode);
+                for (var idx in group.activities) {
+                    var curPutCode = group.activities[idx].putCode.value;
+                    fundingSrvc.setPrivacy(curPutCode, priv);
+                }
+            },
+            setPrivacy: function(putCode, priv) {
+                var idx;
+                var funding = fundingSrvc.getFunding(putCode);
+                funding.visibility.visibility = priv;
+                fundingSrvc.updateProfileFunding(funding);
             },
             updateProfileFunding: function(funding) {
                 $.ajax({
@@ -768,6 +777,7 @@ orcidNgModule.factory("worksSrvc", ['$rootScope', function ($rootScope) {
             bibtexJson: {},
             constants: { 'access_type': { 'USER': 'user', 'ANONYMOUS': 'anonymous'}},
             groups: new Array(),
+            quickRef: {},
             loading: false,
             loadingDetails: false,
             details: new Object(), // we should think about putting details in the
@@ -829,6 +839,7 @@ orcidNgModule.factory("worksSrvc", ['$rootScope', function ($rootScope) {
                 var cloneW = JSON.parse(JSON.stringify(work));
                 cloneW.source = null;
                 cloneW.putCode = null;
+                cloneW.contributors = [];
                 return cloneW;
             },
             copyEIs: function(from, to) {
@@ -929,32 +940,23 @@ orcidNgModule.factory("worksSrvc", ['$rootScope', function ($rootScope) {
                 }
                 return null;
             },
-            deleteGroupWorks: function(putCode) {
+            deleteGroupWorks: function(putCodes) {
                 var rmWorks = new Array();
-                for (var idx in worksSrvc.groups) {
-                    if (worksSrvc.groups[idx].hasPut(putCode)) {
-                       for (var idj in worksSrvc.groups[idx].activities) {
-                           rmWorks.push(worksSrvc.groups[idx].activities[idj]);
-                       }
-                       worksSrvc.groups.splice(idx,1);
-                       for (var idx in rmWorks)
-                           worksSrvc.removeWork(rmWorks[idx]);
-                       break;
+                var rmGroups = new Array();
+                for (var idj in putCodes)
+                    for (var idx in worksSrvc.groups) {
+                        if (worksSrvc.groups[idx].hasPut(putCodes[idj])) {
+                            rmGroups.push(idx);
+                            for (var idj in worksSrvc.groups[idx].activities)
+                                rmWorks.push(worksSrvc.groups[idx].activities[idj].putCode.value);
+                        };
                     }
-                }
+                while (rmGroups.length > 0) 
+                    worksSrvc.groups.splice(rmGroups.pop(),1);
+                worksSrvc.removeWorks(rmWorks);
             },
             deleteWork: function(putCode) {
-                var rmWork;
-                for (var idx in worksSrvc.groups) {
-                    if (worksSrvc.groups[idx].hasPut(putCode)) {
-                        rmWork = worksSrvc.groups[idx].rmByPut(putCode);
-                        if (worksSrvc.groups[idx].activitiesCount == 0)
-                            worksSrvc.groups.splice(idx,1);
-                        break;
-                    };
-                };
-                // remove work on server
-                worksSrvc.removeWork(rmWork, function() {worksSrvc.loadAbbrWorks(worksSrvc.constants.access_type.USER);});
+                worksSrvc.removeWorks([putCode], function() {worksSrvc.loadAbbrWorks(worksSrvc.constants.access_type.USER);});
             },
             makeDefault: function(group, putCode) {
                 group.makeDefault(putCode);
@@ -1006,45 +1008,43 @@ orcidNgModule.factory("worksSrvc", ['$rootScope', function ($rootScope) {
                     failFunc();
                 });
             },
-            removeWork: function(work,callback) {
+            removeWorks: function(putCodes,callback) {
                 $.ajax({
-                    url: getBaseUri() + '/works/works.json',
+                    url: getBaseUri() + '/works/' + putCodes.splice(0,150).join(),
                     type: 'DELETE',
-                    data: angular.toJson(work),
                     contentType: 'application/json;charset=UTF-8',
                     dataType: 'json',
                     success: function(data) {
-                        if(data.errors.length != 0){
-                            console.log("Unable to delete work.");
-                        };
-                        if (callback)
+                        if (putCodes.length > 0) 
+                            worksSrvc.removeWorks(putCodes,callback);
+                        else if (callback)
                             callback(data);
                     }
                 }).fail(function() {
-                    console.log("Error deleting work.");
+                    console.log("Error deleting works.");
                 });
             },
             setGroupPrivacy: function(putCode, priv) {
                 var group = worksSrvc.getGroup(putCode);
+                var putCodes = new Array();
                 for (var idx in group.activities) {
-                    var curPutCode = group.activities[idx].putCode.value;
-                    worksSrvc.setPrivacy(curPutCode, priv);
+                    putCodes.push(group.activities[idx].putCode.value);
+                    group.activities[idx].visibility = priv;
                 }
+                worksSrvc.updateVisibility(putCodes, priv);
             },
             setPrivacy: function(putCode, priv) {
-                var idx;
-                var work = worksSrvc.getWork(putCode);
-                work.visibility = priv;
-                worksSrvc.updateVisibility(work);
+                worksSrvc.updateVisibility([putCode], priv);
             },
-            updateVisibility: function(work) {
+            updateVisibility: function(putCodes, priv) {
                 $.ajax({
-                    url: getBaseUri() + '/works/' + work.putCode.value + '/visibility.json',
-                    type: 'PUT',
-                    data: angular.toJson(work.visibility),
+                    url: getBaseUri() + '/works/' + putCodes.splice(0,150).join() + '/visibility/'+priv,
+                    type: 'GET',
                     contentType: 'application/json;charset=UTF-8',
                     dataType: 'json',
                     success: function(data) {
+                        if (putCodes.length > 0)
+                            worksSrvc.updateVisibility(putCodes, priv);
                     }
                 }).fail(function() {
                     console.log("Error updating profile work.");
@@ -3257,6 +3257,15 @@ function FundingCtrl($scope, $compile, $filter, fundingSrvc, workspaceSrvc, comm
         }
     };
 
+    $scope.hideSources = function(group) {
+        $scope.editSources[group.groupId] = false;
+        group.activePutCode = group.defaultPutCode;
+    };
+
+    $scope.showSources = function(group) {
+        $scope.editSources[group.groupId] = true;
+    };
+
     // remove once grouping is live
     $scope.moreInfoMouseEnter = function(key, $event) {
         $event.stopPropagation();
@@ -3656,8 +3665,8 @@ function FundingCtrl($scope, $compile, $filter, fundingSrvc, workspaceSrvc, comm
         }
     };
 
-    $scope.openEditFunding = function(curFunding) {
-        fundingSrvc.getEditable(curFunding.putCode.value, function(bestMatch) {
+    $scope.openEditFunding = function(putCode) {
+        fundingSrvc.getEditable(putCode, function(bestMatch) {
             $scope.addFundingModal(bestMatch);
         });
     };
@@ -3671,12 +3680,12 @@ function FundingCtrl($scope, $compile, $filter, fundingSrvc, workspaceSrvc, comm
         });
     };
     
-    $scope.showTooltip = function (element){    	
-        $scope.showElement[element] = true;
+    $scope.showTooltip = function (key){
+        $scope.showElement[key] = true;
     };
 
-    $scope.hideTooltip = function (element){    	
-        $scope.showElement[element] = false;
+    $scope.hideTooltip = function (key){
+        $scope.showElement[key] = false;
     };
     
     $scope.userIsSource = function(funding) {
@@ -3735,12 +3744,12 @@ function PublicFundingCtrl($scope, $compile, $filter, workspaceSrvc, fundingSrvc
         return info;
     };
     
-    $scope.showTooltip = function (element){    	
-        $scope.showElement[element] = true;
+    $scope.showTooltip = function (key){
+        $scope.showElement[key] = true;
     };
 
-    $scope.hideTooltip = function (element){    	
-        $scope.showElement[element] = false;
+    $scope.hideTooltip = function (key){    	
+        $scope.showElement[key] = false;
     };
 
 }
@@ -3815,6 +3824,9 @@ function PublicWorkCtrl($scope, $compile, $filter, workspaceSrvc, worksSrvc) {
         group.activePutCode = group.defaultPutCode;
     };
 
+    $scope.showSources = function(group) {
+        $scope.editSources[group.groupId] = true;
+    };
 
     $scope.loadWorkInfo = function(putCode, event) {
         //Close any open popover
@@ -3903,10 +3915,15 @@ function WorkCtrl($scope, $compile, $filter, worksSrvc, workspaceSrvc, actBulkSr
             $scope.bulkEditMap[worksSrvc.groups[idx].getActive().putCode.value] = bool;
     };
 
-    $scope.setBulkGroupPrivacy = function (privacy) {
+    $scope.setBulkGroupPrivacy = function(priv) {
+        var putCodes = new Array();
         for (var idx in worksSrvc.groups)
             if ($scope.bulkEditMap[worksSrvc.groups[idx].getActive().putCode.value])
-                worksSrvc.setGroupPrivacy(worksSrvc.groups[idx].getActive().putCode.value, privacy);
+                for (var idj in worksSrvc.groups[idx].activities) {
+                    putCodes.push(worksSrvc.groups[idx].activities[idj].putCode.value);
+                    worksSrvc.groups[idx].activities[idj].visibility = priv;
+                }
+        worksSrvc.updateVisibility(putCodes, priv);
     };
 
     $scope.deleteBulk = function () {
@@ -3918,8 +3935,7 @@ function WorkCtrl($scope, $compile, $filter, worksSrvc, workspaceSrvc, actBulkSr
         for (var idx in worksSrvc.groups)
             if ($scope.bulkEditMap[worksSrvc.groups[idx].getActive().putCode.value])
                 delPuts.push(worksSrvc.groups[idx].getActive().putCode.value);
-        for (var idx in delPuts)
-                worksSrvc.deleteGroupWorks(delPuts[idx]);
+        worksSrvc.deleteGroupWorks(delPuts);
         $.colorbox.close();
         $scope.bulkEditShow = false;
     };
@@ -4145,7 +4161,7 @@ function WorkCtrl($scope, $compile, $filter, worksSrvc, workspaceSrvc, actBulkSr
                 });
             });
         } else {
-            $scope.editWork = data;
+            $scope.editWork = data;            
             $scope.loadWorkTypes();
             $scope.showAddWorkModal();
         }
@@ -4153,9 +4169,8 @@ function WorkCtrl($scope, $compile, $filter, worksSrvc, workspaceSrvc, actBulkSr
     };
 
     $scope.openEditWork = function(putCode){
-        worksSrvc.getEditable(putCode, function(data) {$scope.addWorkModal(data);});
-    };
-
+    	worksSrvc.getEditable(putCode, function(data) {$scope.addWorkModal(data);});
+    };       
 
     $scope.putWork = function(){
         if ($scope.addingWork) return; // don't process if adding work
@@ -4296,6 +4311,10 @@ function WorkCtrl($scope, $compile, $filter, worksSrvc, workspaceSrvc, actBulkSr
         group.activePutCode = group.defaultPutCode;
     };
 
+    $scope.showSources = function(group) {
+        $scope.editSources[group.groupId] = true;
+    };
+
     $scope.loadDetails = function(putCode, event) {
         //Close any open popover
         $scope.closePopover(event);
@@ -4361,12 +4380,6 @@ function WorkCtrl($scope, $compile, $filter, worksSrvc, workspaceSrvc, actBulkSr
         $scope.editWork.visibility = priv;
     };
 
-    $scope.setPrivacy = function(putCode, priv, $event) {
-        $event.preventDefault();
-        $scope.curPrivToggle = null;
-        worksSrvc.setPrivacy(putCode, priv);
-    };
-
     $scope.serverValidate = function (relativePath) {
         $.ajax({
             url: getBaseUri() + '/' + relativePath,
@@ -4400,13 +4413,13 @@ function WorkCtrl($scope, $compile, $filter, worksSrvc, workspaceSrvc, actBulkSr
         $scope.editWork.workType.errors = [];
     };
     
-    $scope.showTooltip = function (element){    	
-    	$scope.showElement[element] = true;
+    $scope.showTooltip = function (key){    	
+        $scope.showElement[key] = true;
     	
     }
     
-    $scope.hideTooltip = function (element){    	
-    	$scope.showElement[element] = false;
+    $scope.hideTooltip = function (key){    	
+    	$scope.showElement[key] = false;
     }
     
     $scope.openFileDialog = function(){    	
@@ -6799,10 +6812,16 @@ function CustomEmailCtrl($scope, $compile) {
     $scope.showEmailList = false;
     $scope.showCreateForm = false;
     $scope.showEditForm = false;
-
+    $scope.clientId = null;
+    
+    $scope.init = function(client_id) {
+    	$scope.clientId = client_id;
+    	$scope.getCustomEmails();
+    };
+    
     $scope.getCustomEmails = function() {
         $.ajax({
-            url: getBaseUri() + '/custom-emails/get.json',
+            url: getBaseUri() + '/group/custom-emails/get.json?clientId=' + $scope.clientId,
             type: 'GET',
             contentType: 'application/json;charset=UTF-8',
             dataType: 'json',
@@ -6829,7 +6848,7 @@ function CustomEmailCtrl($scope, $compile) {
 
     $scope.displayCreateForm = function() {
         $.ajax({
-            url: getBaseUri() + '/custom-emails/get-empty.json',
+            url: getBaseUri() + '/group/custom-emails/get-empty.json?clientId=' + $scope.clientId,
             type: 'GET',
             contentType: 'application/json;charset=UTF-8',
             dataType: 'json',
@@ -6851,7 +6870,7 @@ function CustomEmailCtrl($scope, $compile) {
 
     $scope.saveCustomEmail = function() {
         $.ajax({
-            url: getBaseUri() + '/custom-emails/create.json',
+            url: getBaseUri() + '/group/custom-emails/create.json',
             type: 'POST',
             data: angular.toJson($scope.customEmail),
             contentType: 'application/json;charset=UTF-8',
@@ -6881,7 +6900,7 @@ function CustomEmailCtrl($scope, $compile) {
 
     $scope.editCustomEmail = function() {
         $.ajax({
-            url: getBaseUri() + '/custom-emails/update.json',
+            url: getBaseUri() + '/group/custom-emails/update.json',
             type: 'POST',
             data: angular.toJson($scope.editedCustomEmail),
             contentType: 'application/json;charset=UTF-8',
@@ -6922,7 +6941,7 @@ function CustomEmailCtrl($scope, $compile) {
 
     $scope.deleteCustomEmail = function(index) {
         $.ajax({
-            url: getBaseUri() + '/custom-emails/delete.json',
+            url: getBaseUri() + '/group/custom-emails/delete.json',
             type: 'POST',
             data: angular.toJson($scope.toDelete),
             contentType: 'application/json;charset=UTF-8',
@@ -6945,8 +6964,6 @@ function CustomEmailCtrl($scope, $compile) {
     $scope.closeModal = function(){
         $.colorbox.close();
     };
-
-    $scope.getCustomEmails();
 };
 
 function switchUserCtrl($scope,$compile){

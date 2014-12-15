@@ -66,12 +66,11 @@
     <!--[if lt IE 8]>
         <link rel="stylesheet" href="${staticCdn}/twitter-bootstrap/3.1.0/css/bootstrap-ie7.css?v=${ver}"/>	                
     <![endif]-->
-    
-    <#if request.requestURI?ends_with("my-orcid3") || RequestParameters['v']??>    
+    <#if request.requestURI?ends_with("my-orcid") || request.requestURI?ends_with("workspace") || isPublicProfile??>
         <link rel="stylesheet" href="${staticCdn}/css/orcid.resp_v3.css?v=${ver}"/>     
     <#else>
        <link rel="stylesheet" href="${staticCdn}/css/orcid.resp.css?v=${ver}"/>    
-    </#if>	    
+    </#if>     
     <!--[if lt IE 8]>
     	<link rel="stylesheet" href="${staticCdn}/css/orcid-ie7.css?v=${ver}"/>
     <![endif]-->
