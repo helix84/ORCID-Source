@@ -364,7 +364,7 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
     /**
      * @return the otherNames
      */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = PROFILE)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = PROFILE)
     @Sort(type = SortType.NATURAL)
     public SortedSet<OtherNameEntity> getOtherNames() {
         return otherNames;
@@ -378,7 +378,7 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
         this.otherNames = otherNames;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = PROFILE, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = PROFILE, orphanRemoval = true)
     @Sort(type = SortType.NATURAL)
     public SortedSet<ProfileKeywordEntity> getKeywords() {
         return keywords;
@@ -391,7 +391,7 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
     /**
      * @return the affiliations
      */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = PROFILE, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = PROFILE, orphanRemoval = true)
     @Sort(type = SortType.NATURAL)
     public SortedSet<OrgAffiliationRelationEntity> getOrgAffiliationRelations() {
         return orgAffiliationRelations;
@@ -405,7 +405,7 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
         this.orgAffiliationRelations = affiliations;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = PROFILE, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = PROFILE, orphanRemoval = true)
     public Set<EmailEntity> getEmails() {
         return emails;
     }
@@ -446,7 +446,7 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
     /**
      * @return the externalIdentifiers
      */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "owner", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "owner", orphanRemoval = true)
     @Sort(type = SortType.NATURAL)
     public Set<ExternalIdentifierEntity> getExternalIdentifiers() {
         return externalIdentifiers;
@@ -481,7 +481,7 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
     /**
      * @return the grants
      */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = PROFILE, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = PROFILE, orphanRemoval = true)
     @Sort(type = SortType.COMPARATOR, comparator = ProfileFundingEntityDisplayIndexComparatorDesc.class)
     public SortedSet<ProfileFundingEntity> getProfileFunding() {
         return profileFunding;
@@ -498,7 +498,7 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
     /**
      * @return the works
      */
-    @OneToMany(mappedBy = PROFILE, cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = PROFILE, cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @Sort(type = SortType.COMPARATOR, comparator = ProfileWorkEntityDisplayIndexComparatorDesc.class)
     public SortedSet<ProfileWorkEntity> getProfileWorks() {
         return profileWorks;
@@ -710,7 +710,7 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
         this.sendMemberUpdateRequests = sendMemberUpdateRequests;
     }
 
-    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
     @JoinColumn(name = "group_orcid")
     @Sort(type = SortType.COMPARATOR, comparator = OrcidEntityIdComparator.class)
     public SortedSet<ClientDetailsEntity> getClients() {
@@ -721,7 +721,7 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
         this.clients = clients;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = PROFILE)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = PROFILE)
     @Sort(type = SortType.NATURAL)
     public SortedSet<OrcidOauth2TokenDetail> getTokenDetails() {
         return tokenDetails;
@@ -742,7 +742,7 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
         this.indexingStatus = indexingStatus;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "orcid")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "orcid")
     public Set<ProfileEventEntity> getProfileEvents() {
         return profileEvents;
     }
