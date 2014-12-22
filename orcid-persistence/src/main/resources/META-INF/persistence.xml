@@ -58,8 +58,7 @@
         <class>org.orcid.persistence.jpa.entities.WebhookEntity</class>
         <class>org.orcid.persistence.jpa.entities.WorkEntity</class>
         <class>org.orcid.persistence.jpa.entities.WorkExternalIdentifierEntity</class>
-        <class>org.orcid.persistence.jpa.entities.WorkSourceEntity</class>
-        <class>org.orcid.persistence.jpa.entities</class>
+        <class>org.orcid.persistence.jpa.entities.WorkSourceEntity</class>        
 
         <!-- OAuth entities -->
         <class>org.orcid.persistence.jpa.entities.ClientDetailsEntity</class>
