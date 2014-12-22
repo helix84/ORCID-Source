@@ -116,7 +116,7 @@ public class ProfileWorkDaoImpl extends GenericDaoImpl<ProfileWorkEntity, Profil
     @Override
     @Transactional
     public ProfileWorkEntity getProfileWork(String clientOrcid, String workId) {
-        Query query = entityManager.createQuery("from ProfileWorkEntity where profile.id=:clientOrcid and work.id=:workId");
+        Query query = readOnlyEntityManager.createQuery("from ProfileWorkEntity where profile.id=:clientOrcid and work.id=:workId");
         query.setParameter("clientOrcid", clientOrcid);
         query.setParameter("workId", Long.valueOf(workId));
         return (ProfileWorkEntity) query.getSingleResult();
@@ -165,7 +165,7 @@ public class ProfileWorkDaoImpl extends GenericDaoImpl<ProfileWorkEntity, Profil
     public List<String> findOrcidsWhereWorkContributorCreditNameIsNull(int chunkSize) {
         StringBuilder builder = new StringBuilder("SELECT DISTINCT pw.orcid FROM profile_work pw");
         builder.append(" JOIN work w ON w.work_id = pw.work_id AND w.contributors_json IS NOT NULL AND w.contributors_json like '\"creditName\":null'");        
-        Query query = entityManager.createNativeQuery(builder.toString());
+        Query query = readOnlyEntityManager.createNativeQuery(builder.toString());
         query.setMaxResults(chunkSize);
         return query.getResultList();
     }

@@ -44,7 +44,7 @@ public class CustomEmailDaoImpl extends GenericDaoImpl<CustomEmailEntity, Custom
      * */
     @Override
     public List<CustomEmailEntity> getCustomEmails(String clientDetailsId) {
-        TypedQuery<CustomEmailEntity> query = entityManager.createQuery("from CustomEmailEntity WHERE clientDetailsEntity.id=:clientDetailsId", CustomEmailEntity.class);
+        TypedQuery<CustomEmailEntity> query = readOnlyEntityManager.createQuery("from CustomEmailEntity WHERE clientDetailsEntity.id=:clientDetailsId", CustomEmailEntity.class);
         query.setParameter("clientDetailsId", clientDetailsId);        
         return query.getResultList();
     }
@@ -58,7 +58,7 @@ public class CustomEmailDaoImpl extends GenericDaoImpl<CustomEmailEntity, Custom
     @Override
     @Cacheable(value = "custom-email", key = "#clientDetailsId.concat('-').concat(#emailType).concat('-').concat(#lastModified)")
     public CustomEmailEntity findByClientIdAndEmailType(String clientDetailsId, EmailType emailType, long lastModified) {
-        TypedQuery<CustomEmailEntity> query = entityManager.createQuery("FROM CustomEmailEntity WHERE clientDetailsEntity.id=:clientDetailsId and emailType=:emailType", CustomEmailEntity.class);
+        TypedQuery<CustomEmailEntity> query = readOnlyEntityManager.createQuery("FROM CustomEmailEntity WHERE clientDetailsEntity.id=:clientDetailsId and emailType=:emailType", CustomEmailEntity.class);
         query.setParameter("clientDetailsId", clientDetailsId);
         query.setParameter("emailType", emailType);
         try {
@@ -137,7 +137,7 @@ public class CustomEmailDaoImpl extends GenericDaoImpl<CustomEmailEntity, Custom
      * */
     @Override
     public boolean exists(String clientDetailsId, EmailType emailType) {
-        TypedQuery<Long> query = entityManager.createQuery("SELECT count(*) FROM CustomEmailEntity WHERE clientDetailsEntity.id=:clientDetailsId and emailType=:emailType", Long.class);
+        TypedQuery<Long> query = readOnlyEntityManager.createQuery("SELECT count(*) FROM CustomEmailEntity WHERE clientDetailsEntity.id=:clientDetailsId and emailType=:emailType", Long.class);
         query.setParameter("clientDetailsId", clientDetailsId);
         query.setParameter("emailType", emailType);
         Long result = query.getSingleResult();
@@ -152,7 +152,7 @@ public class CustomEmailDaoImpl extends GenericDaoImpl<CustomEmailEntity, Custom
      * */
     @Override
     public Date getLastModified(String clientDetailsId, EmailType emailType) {
-        TypedQuery<Date> query = entityManager.createQuery("SELECT lastModified FROM CustomEmailEntity WHERE clientDetailsEntity.id=:clientDetailsId and emailType=:emailType", Date.class);
+        TypedQuery<Date> query = readOnlyEntityManager.createQuery("SELECT lastModified FROM CustomEmailEntity WHERE clientDetailsEntity.id=:clientDetailsId and emailType=:emailType", Date.class);
         query.setParameter("clientDetailsId", clientDetailsId);
         query.setParameter("emailType", emailType);
         Date result = null;

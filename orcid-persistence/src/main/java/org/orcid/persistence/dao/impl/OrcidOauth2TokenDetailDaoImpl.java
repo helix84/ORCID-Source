@@ -46,7 +46,7 @@ public class OrcidOauth2TokenDetailDaoImpl extends GenericDaoImpl<OrcidOauth2Tok
     @Override
     public OrcidOauth2TokenDetail findByTokenValue(String tokenValue) {
         Assert.hasText(tokenValue, "Attempt to retrieve a OrcidOauth2TokenDetail with a null or empty token value");
-        TypedQuery<OrcidOauth2TokenDetail> query = entityManager.createQuery("from " + "OrcidOauth2TokenDetail where tokenValue = :token", OrcidOauth2TokenDetail.class);
+        TypedQuery<OrcidOauth2TokenDetail> query = readOnlyEntityManager.createQuery("from " + "OrcidOauth2TokenDetail where tokenValue = :token", OrcidOauth2TokenDetail.class);
         query.setParameter("token", tokenValue);
         return query.getSingleResult();
     }
@@ -54,7 +54,7 @@ public class OrcidOauth2TokenDetailDaoImpl extends GenericDaoImpl<OrcidOauth2Tok
     @Override
     public OrcidOauth2TokenDetail findNonDisabledByTokenValue(String tokenValue) {
         Assert.hasText(tokenValue, "Attempt to retrieve a OrcidOauth2TokenDetail with a null or empty token value");
-        TypedQuery<OrcidOauth2TokenDetail> query = entityManager.createQuery("from "
+        TypedQuery<OrcidOauth2TokenDetail> query = readOnlyEntityManager.createQuery("from "
                 + "OrcidOauth2TokenDetail where tokenValue = :token and (tokenDisabled = FALSE or tokenDisabled is null)", OrcidOauth2TokenDetail.class);
         query.setParameter("token", tokenValue);
         return query.getSingleResult();
@@ -96,7 +96,7 @@ public class OrcidOauth2TokenDetailDaoImpl extends GenericDaoImpl<OrcidOauth2Tok
 
     @Override
     public OrcidOauth2TokenDetail findByRefreshTokenValue(String refreshTokenValue) {
-        TypedQuery<OrcidOauth2TokenDetail> query = entityManager.createQuery("from " + "OrcidOauth2TokenDetail where refreshTokenValue = :refreshTokenValue",
+        TypedQuery<OrcidOauth2TokenDetail> query = readOnlyEntityManager.createQuery("from " + "OrcidOauth2TokenDetail where refreshTokenValue = :refreshTokenValue",
                 OrcidOauth2TokenDetail.class);
         query.setParameter("refreshTokenValue", refreshTokenValue);
         return query.getSingleResult();
@@ -105,7 +105,7 @@ public class OrcidOauth2TokenDetailDaoImpl extends GenericDaoImpl<OrcidOauth2Tok
     @Override
     @ExcludeFromProfileLastModifiedUpdate
     public OrcidOauth2TokenDetail findByAuthenticationKey(String authenticationKey) {
-        TypedQuery<OrcidOauth2TokenDetail> query = entityManager.createQuery("from " + "OrcidOauth2TokenDetail where authenticationKey = :authenticationKey",
+        TypedQuery<OrcidOauth2TokenDetail> query = readOnlyEntityManager.createQuery("from " + "OrcidOauth2TokenDetail where authenticationKey = :authenticationKey",
                 OrcidOauth2TokenDetail.class);
         query.setParameter("authenticationKey", authenticationKey);
         return query.getSingleResult();
@@ -113,7 +113,7 @@ public class OrcidOauth2TokenDetailDaoImpl extends GenericDaoImpl<OrcidOauth2Tok
 
     @Override
     public List<OrcidOauth2TokenDetail> findByUserName(String userName) {
-        TypedQuery<OrcidOauth2TokenDetail> query = entityManager.createQuery("from " + "OrcidOauth2TokenDetail where profile.id = :userName",
+        TypedQuery<OrcidOauth2TokenDetail> query = readOnlyEntityManager.createQuery("from " + "OrcidOauth2TokenDetail where profile.id = :userName",
                 OrcidOauth2TokenDetail.class);
         query.setParameter("userName", userName);
         return query.getResultList();
@@ -121,7 +121,7 @@ public class OrcidOauth2TokenDetailDaoImpl extends GenericDaoImpl<OrcidOauth2Tok
 
     @Override
     public List<OrcidOauth2TokenDetail> findByClientId(String clientId) {
-        TypedQuery<OrcidOauth2TokenDetail> query = entityManager.createQuery("from " + "OrcidOauth2TokenDetail where clientDetailsEntity.id = :clientId",
+        TypedQuery<OrcidOauth2TokenDetail> query = readOnlyEntityManager.createQuery("from " + "OrcidOauth2TokenDetail where clientDetailsEntity.id = :clientId",
                 OrcidOauth2TokenDetail.class);
         query.setParameter("clientId", clientId);
         return query.getResultList();
@@ -191,7 +191,7 @@ public class OrcidOauth2TokenDetailDaoImpl extends GenericDaoImpl<OrcidOauth2Tok
      * */
     @SuppressWarnings("unchecked")
     public List<String> findAvailableScopesByUserAndClientId(String clientId, String userName) {
-        Query query = entityManager
+        Query query = readOnlyEntityManager
                 .createNativeQuery("select distinct(scope_type) from oauth2_token_detail where user_orcid=:userName and client_details_id=:clientId and (token_disabled = FALSE or token_disabled is null)");
         query.setParameter("clientId", clientId);
         query.setParameter("userName", userName);

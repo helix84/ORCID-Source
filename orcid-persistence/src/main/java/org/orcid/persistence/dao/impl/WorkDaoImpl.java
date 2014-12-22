@@ -85,7 +85,7 @@ public class WorkDaoImpl extends GenericDaoImpl<WorkEntity, Long> implements Wor
     @SuppressWarnings("unchecked")
     public List<MinimizedWorkEntity> findWorks(String orcid) {
 
-        Query query = entityManager
+        Query query = readOnlyEntityManager
                 .createQuery("select NEW org.orcid.persistence.jpa.entities.custom.MinimizedWorkEntity(w.id, w.title, w.subtitle, w.journalTitle, w.description, w.publicationDate.day, w.publicationDate.month, w.publicationDate.year, pw.visibility, w.externalIdentifiersJson, pw.displayIndex, pw.source, pw.dateCreated, pw.lastModified, w.workType, w.languageCode, w.translatedTitleLanguageCode, w.translatedTitle, w.workUrl) "
                         + "from WorkEntity w, ProfileWorkEntity pw "
                         + "where pw.profile.id=:orcid and w.id=pw.work.id "
@@ -104,7 +104,7 @@ public class WorkDaoImpl extends GenericDaoImpl<WorkEntity, Long> implements Wor
      * */
     @SuppressWarnings("unchecked")
     public List<MinimizedWorkEntity> findPublicWorks(String orcid) {
-        Query query = entityManager
+        Query query = readOnlyEntityManager
                 .createQuery("select NEW org.orcid.persistence.jpa.entities.custom.MinimizedWorkEntity(w.id, w.title, w.subtitle, w.journalTitle, w.description, w.publicationDate.day, w.publicationDate.month, w.publicationDate.year, pw.visibility, w.externalIdentifiersJson, pw.displayIndex, pw.sourceProfile, pw.dateCreated, pw.lastModified, w.workType, w.languageCode, w.translatedTitleLanguageCode, w.translatedTitle, w.workUrl) "
                         + "from WorkEntity w, ProfileWorkEntity pw "
                         + "where pw.visibility='PUBLIC' and pw.profile.id=:orcid and w.id=pw.work.id "

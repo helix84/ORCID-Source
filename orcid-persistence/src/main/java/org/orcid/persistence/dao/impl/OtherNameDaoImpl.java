@@ -42,7 +42,7 @@ public class OtherNameDaoImpl extends GenericDaoImpl<OtherNameEntity, Long> impl
     @Override
     @SuppressWarnings("unchecked")
     public List<OtherNameEntity> getOtherName(String orcid) {
-        Query query = entityManager.createQuery("FROM OtherNameEntity WHERE profile.id=:orcid");
+        Query query = readOnlyEntityManager.createQuery("FROM OtherNameEntity WHERE profile.id=:orcid");
         query.setParameter("orcid", orcid);
         return query.getResultList();
     }

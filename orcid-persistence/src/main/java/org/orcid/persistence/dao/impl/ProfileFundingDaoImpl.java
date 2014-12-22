@@ -106,7 +106,7 @@ public class ProfileFundingDaoImpl extends GenericDaoImpl<ProfileFundingEntity, 
      * */
     @Override
     public ProfileFundingEntity getProfileFundingEntity(String orgId, String clientOrcid) {
-        Query query = entityManager.createQuery("from ProfileFundingEntity where profile.id=:clientOrcid and org.id=:orgId");
+        Query query = readOnlyEntityManager.createQuery("from ProfileFundingEntity where profile.id=:clientOrcid and org.id=:orgId");
         query.setParameter("clientOrcid", clientOrcid);
         query.setParameter("orgId", Long.valueOf(orgId));
         return (ProfileFundingEntity) query.getSingleResult();
@@ -122,7 +122,7 @@ public class ProfileFundingDaoImpl extends GenericDaoImpl<ProfileFundingEntity, 
      * */
     @Override
     public ProfileFundingEntity getProfileFundingEntity(String profileFundingId) {
-        Query query = entityManager.createQuery("from ProfileFundingEntity where id=:id");
+        Query query = readOnlyEntityManager.createQuery("from ProfileFundingEntity where id=:id");
         query.setParameter("id", Long.valueOf(profileFundingId));
         return (ProfileFundingEntity) query.getSingleResult();
     }
@@ -133,7 +133,7 @@ public class ProfileFundingDaoImpl extends GenericDaoImpl<ProfileFundingEntity, 
      * @return a list of all profile fundings where the amount is not null
      * */
     public List<ProfileFundingEntity> getProfileFundingWithAmount() {
-        TypedQuery<ProfileFundingEntity> query = entityManager.createQuery("from ProfileFundingEntity where amount is not null and numeric_amount is null", ProfileFundingEntity.class);
+        TypedQuery<ProfileFundingEntity> query = readOnlyEntityManager.createQuery("from ProfileFundingEntity where amount is not null and numeric_amount is null", ProfileFundingEntity.class);
         return query.getResultList();
     }
     
@@ -184,7 +184,7 @@ public class ProfileFundingDaoImpl extends GenericDaoImpl<ProfileFundingEntity, 
     @Override
     @SuppressWarnings("unchecked")    
     public List<BigInteger> findFundingNeedingExternalIdentifiersMigration(int chunkSize) {
-        Query query = entityManager.createNativeQuery("SELECT id FROM profile_funding WHERE id IN (SELECT profile_funding_id FROM funding_external_identifier) AND external_identifiers_json IS NULL LIMIT :chunkSize");
+        Query query = readOnlyEntityManager.createNativeQuery("SELECT id FROM profile_funding WHERE id IN (SELECT profile_funding_id FROM funding_external_identifier) AND external_identifiers_json IS NULL LIMIT :chunkSize");
         query.setParameter("chunkSize", chunkSize);                
         List<BigInteger> results = query.getResultList();        
         return results;

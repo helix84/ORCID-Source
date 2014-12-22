@@ -45,7 +45,7 @@ public class ClientDetailsDaoImpl extends GenericDaoImpl<ClientDetailsEntity, St
     @Override
     @Cacheable(value = "client-details", key = "#orcid.concat('-').concat(#lastModified)")
     public ClientDetailsEntity findByClientId(String orcid, long lastModified) {
-        TypedQuery<ClientDetailsEntity> query = entityManager.createQuery("from ClientDetailsEntity where id = :orcid", ClientDetailsEntity.class);
+        TypedQuery<ClientDetailsEntity> query = readOnlyEntityManager.createQuery("from ClientDetailsEntity where id = :orcid", ClientDetailsEntity.class);
         query.setParameter("orcid", orcid);
         try {
             return query.getSingleResult();
@@ -90,14 +90,14 @@ public class ClientDetailsDaoImpl extends GenericDaoImpl<ClientDetailsEntity, St
     
     @Override
     public List<ClientSecretEntity> getClientSecretsByClientId(String clientId) {
-        TypedQuery<ClientSecretEntity> query = entityManager.createQuery("From ClientSecretEntity WHERE client_details_id=:clientId", ClientSecretEntity.class);
+        TypedQuery<ClientSecretEntity> query = readOnlyEntityManager.createQuery("From ClientSecretEntity WHERE client_details_id=:clientId", ClientSecretEntity.class);
         query.setParameter("clientId", clientId);
         return query.getResultList();
     }
     
     @Override
     public boolean exists(String clientId) {
-        TypedQuery<Long> query = entityManager.createQuery("select count(*) from ClientDetailsEntity where client_details_id=:clientId", Long.class);
+        TypedQuery<Long> query = readOnlyEntityManager.createQuery("select count(*) from ClientDetailsEntity where client_details_id=:clientId", Long.class);
         query.setParameter("clientId", clientId);
         Long result = query.getSingleResult();
         return (result != null && result > 0);
@@ -105,7 +105,7 @@ public class ClientDetailsDaoImpl extends GenericDaoImpl<ClientDetailsEntity, St
     
     @Override
     public boolean belongsTo(String clientId, String groupId) {
-        TypedQuery<ClientDetailsEntity> query = entityManager.createQuery("from ClientDetailsEntity where id = :clientId and groupProfile.id = :groupId", ClientDetailsEntity.class);
+        TypedQuery<ClientDetailsEntity> query = readOnlyEntityManager.createQuery("from ClientDetailsEntity where id = :clientId and groupProfile.id = :groupId", ClientDetailsEntity.class);
         query.setParameter("clientId", clientId);
         query.setParameter("groupId", groupId);
         try {

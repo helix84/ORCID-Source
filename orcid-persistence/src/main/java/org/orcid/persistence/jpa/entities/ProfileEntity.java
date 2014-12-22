@@ -405,7 +405,7 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
         this.orgAffiliationRelations = affiliations;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = PROFILE, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = PROFILE, orphanRemoval = true)
     public Set<EmailEntity> getEmails() {
         return emails;
     }

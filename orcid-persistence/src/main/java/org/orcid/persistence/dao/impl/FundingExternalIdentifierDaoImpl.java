@@ -101,7 +101,7 @@ public class FundingExternalIdentifierDaoImpl extends GenericDaoImpl<FundingExte
 	 * */
 	@Override
 	public FundingExternalIdentifierEntity getFundingExternalIdentifier(String id) {
-		Query query = entityManager.createQuery("from FundingExternalIdentifierEntity where id=:id");
+		Query query = readOnlyEntityManager.createQuery("from FundingExternalIdentifierEntity where id=:id");
 		query.setParameter("id", Long.valueOf(id));
 		return (FundingExternalIdentifierEntity)query.getSingleResult();		
 	}
@@ -118,7 +118,7 @@ public class FundingExternalIdentifierDaoImpl extends GenericDaoImpl<FundingExte
 	@Override
 	public List<FundingExternalIdentifierEntity> getFundingExternalIdentifiers(
 			String profileFundingId) {
-		Query query = entityManager.createQuery("from FundingExternalIdentifierEntity where orgFunding.id=:id");
+		Query query = readOnlyEntityManager.createQuery("from FundingExternalIdentifierEntity where orgFunding.id=:id");
 		query.setParameter("id", Long.valueOf(profileFundingId));
 		return query.getResultList();
 	}

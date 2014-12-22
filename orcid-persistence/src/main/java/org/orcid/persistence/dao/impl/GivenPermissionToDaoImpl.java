@@ -40,7 +40,7 @@ public class GivenPermissionToDaoImpl extends GenericDaoImpl<GivenPermissionToEn
 
     @Override
     public GivenPermissionToEntity findByGiverAndReceiverOrcid(String giverOrcid, String receiverOrcid) {
-        TypedQuery<GivenPermissionToEntity> query = entityManager.createQuery("from GivenPermissionToEntity where giver_orcid = :giverOrcid and receiver_orcid = :receiverOrcid",
+        TypedQuery<GivenPermissionToEntity> query = readOnlyEntityManager.createQuery("from GivenPermissionToEntity where giver_orcid = :giverOrcid and receiver_orcid = :receiverOrcid",
                 GivenPermissionToEntity.class);
         query.setParameter("giverOrcid", giverOrcid);
         query.setParameter("receiverOrcid", receiverOrcid);

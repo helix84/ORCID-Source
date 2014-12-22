@@ -61,12 +61,12 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
     @SuppressWarnings("unchecked")
     @Override
     public List<ProfileEntity> retrieveSelectableSponsors() {
-        return (List<ProfileEntity>) entityManager.createQuery("from ProfileEntity where isSelectableSponsor=true order by vocativeName").getResultList();
+        return (List<ProfileEntity>) readOnlyEntityManager.createQuery("from ProfileEntity where isSelectableSponsor=true order by vocativeName").getResultList();
     }
 
     @Override
     public List<String> findOrcidsByName(String name) {
-        TypedQuery<String> query = entityManager.createQuery("select id from ProfileEntity where lower(givenNames) like lower(:name || '%') or lower"
+        TypedQuery<String> query = readOnlyEntityManager.createQuery("select id from ProfileEntity where lower(givenNames) like lower(:name || '%') or lower"
                 + "(familyName) like lower(:name || '%') or lower(vocativeName) like lower(:name || " + "'%') or lower(creditName) like lower(:name || '%')",
                 String.class);
         query.setParameter("name", name);
@@ -95,7 +95,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
         // Ordering by indexing status will force re-indexing to be lower
         // priority than normal indexing
         builder.append(" ORDER BY (p.last_modified > (NOW() - CAST('1' as INTERVAL HOUR))) DESC, indexing_status, p.last_modified");
-        Query query = entityManager.createNativeQuery(builder.toString());
+        Query query = readOnlyEntityManager.createNativeQuery(builder.toString());
         query.setParameter("indexingStatus", IndexingStatus.getNames(indexingStatuses));
         if (!orcidsToExclude.isEmpty()) {
             query.setParameter("orcidsToExclude", orcidsToExclude);
@@ -128,7 +128,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
             builder.append(" AND p.orcid NOT IN :orcidsToExclude");
         }
         builder.append(" ORDER BY p.last_modified");
-        Query query = entityManager.createNativeQuery(builder.toString());
+        Query query = readOnlyEntityManager.createNativeQuery(builder.toString());
         query.setParameter("indexingStatus", IndexingStatus.PENDING.name());
         if (!orcidsToExclude.isEmpty()) {
             query.setParameter("orcidsToExclude", orcidsToExclude);
@@ -153,7 +153,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
                 +    "and (e.source_id = e.orcid OR e.source_id is null)"
                 +    " ORDER BY e.last_modified";
         //@formatter:on
-        Query query = entityManager.createNativeQuery(queryStr);
+        Query query = readOnlyEntityManager.createNativeQuery(queryStr);
         query.setParameter("evt", ev.name());
         query.setMaxResults(maxResults);
         return query.getResultList();
@@ -179,7 +179,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
             builder.append(" AND p.orcid NOT IN :orcidsToExclude");
         }
         builder.append(" ORDER BY p.last_modified");
-        Query query = entityManager.createNativeQuery(builder.toString());
+        Query query = readOnlyEntityManager.createNativeQuery(builder.toString());
         query.setParameter("profileEventType", ProfileEventType.CLAIM_REMINDER_SENT.name());
         if (!orcidsToExclude.isEmpty()) {
             query.setParameter("orcidsToExclude", orcidsToExclude);
@@ -242,7 +242,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
             builder.append(" AND p.orcid NOT IN :orcidsToExclude");
         }
 
-        Query query = entityManager.createNativeQuery(builder.toString());
+        Query query = readOnlyEntityManager.createNativeQuery(builder.toString());
 
         for (int i = 0; i < pets.size(); i++) {
             query.setParameter("profileEventType" + i, pets.get(i).name());
@@ -257,14 +257,14 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
 
     @Override
     public List<String> findOrcidsNeedingEmailMigration(int maxResults) {
-        TypedQuery<String> query = entityManager.createQuery("select p.id from ProfileEntity p where email is not null and orcidType != 'CLIENT'", String.class);
+        TypedQuery<String> query = readOnlyEntityManager.createQuery("select p.id from ProfileEntity p where email is not null and orcidType != 'CLIENT'", String.class);
         query.setMaxResults(maxResults);
         return query.getResultList();
     }
 
     @Override
     public List<ProfileEntity> findProfilesThatMissedIndexing(int maxResults) {
-        TypedQuery<ProfileEntity> query = entityManager.createQuery(
+        TypedQuery<ProfileEntity> query = readOnlyEntityManager.createQuery(
                 "from ProfileEntity where lastModified > lastIndexedDate and indexingStatus not in ('PENDING', 'IGNORE') order by lastModified", ProfileEntity.class);
         query.setMaxResults(maxResults);
         return query.getResultList();
@@ -272,7 +272,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
 
     @Override
     public boolean orcidExists(String orcid) {
-        TypedQuery<Long> query = entityManager.createQuery("select count(pe.id) from ProfileEntity pe where pe.id=:orcid", Long.class);
+        TypedQuery<Long> query = readOnlyEntityManager.createQuery("select count(pe.id) from ProfileEntity pe where pe.id=:orcid", Long.class);
         query.setParameter("orcid", orcid);
         Long result = query.getSingleResult();
         return (result != null && result > 0);
@@ -317,7 +317,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
 
     @Override
     public boolean hasBeenGivenPermissionTo(String giverOrcid, String receiverOrcid) {
-        TypedQuery<Long> query = entityManager.createQuery(
+        TypedQuery<Long> query = readOnlyEntityManager.createQuery(
                 "select count(gpt.id) from GivenPermissionToEntity gpt where gpt.giver = :giverOrcid and gpt.receiver.id = :receiverOrcid", Long.class);
         query.setParameter("giverOrcid", giverOrcid);
         query.setParameter("receiverOrcid", receiverOrcid);
@@ -327,7 +327,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
 
     @Override
     public boolean existsAndNotClaimedAndBelongsTo(String messageOrcid, String clientId) {
-        TypedQuery<Long> query = entityManager.createQuery(
+        TypedQuery<Long> query = readOnlyEntityManager.createQuery(
                 "select count(p.id) from ProfileEntity p where p.claimed = FALSE and (p.source.sourceClient.id = :clientId or p.source.sourceProfile.id = :clientId) and p.id = :messageOrcid", Long.class);
         query.setParameter("clientId", clientId);
         query.setParameter("messageOrcid", messageOrcid);
@@ -337,7 +337,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
 
     @Override
     public boolean exists(String orcid) {
-        TypedQuery<Long> query = entityManager.createQuery("select count(p.id) from ProfileEntity p where p.id = :orcid", Long.class);
+        TypedQuery<Long> query = readOnlyEntityManager.createQuery("select count(p.id) from ProfileEntity p where p.id = :orcid", Long.class);
         query.setParameter("orcid", orcid);
         Long result = query.getSingleResult();
         return (result != null && result > 0);
@@ -362,7 +362,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
 
     @Override
     public Long getConfirmedProfileCount() {
-        TypedQuery<Long> query = entityManager.createQuery("select count(pe) from ProfileEntity pe where pe.completedDate is not null", Long.class);
+        TypedQuery<Long> query = readOnlyEntityManager.createQuery("select count(pe) from ProfileEntity pe where pe.completedDate is not null", Long.class);
         return query.getSingleResult();
     }
 
@@ -391,7 +391,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
     }
 
     public Date retrieveLastModifiedDate(String orcid) {
-        TypedQuery<Date> query = entityManager.createQuery("select lastModified from ProfileEntity where orcid = :orcid", Date.class);
+        TypedQuery<Date> query = readOnlyEntityManager.createQuery("select lastModified from ProfileEntity where orcid = :orcid", Date.class);
         query.setParameter("orcid", orcid);
         return query.getSingleResult();
     }
@@ -440,7 +440,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
 
     @Override
     public OrcidType retrieveOrcidType(String orcid) {
-        TypedQuery<OrcidType> query = entityManager.createQuery("select orcidType from ProfileEntity where orcid = :orcid", OrcidType.class);
+        TypedQuery<OrcidType> query = readOnlyEntityManager.createQuery("select orcidType from ProfileEntity where orcid = :orcid", OrcidType.class);
         query.setParameter("orcid", orcid);
         List<OrcidType> results = query.getResultList();
         return results.isEmpty() ? null : results.get(0);
@@ -448,7 +448,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
 
     @Override
     public List<Object[]> findInfoForDecryptionAnalysis() {
-        Query query = entityManager.createQuery("select id, encryptedSecurityAnswer from ProfileEntity");
+        Query query = readOnlyEntityManager.createQuery("select id, encryptedSecurityAnswer from ProfileEntity");
         @SuppressWarnings("unchecked")
         List<Object[]> results = query.getResultList();
         return results;
@@ -456,7 +456,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
 
     @Override
     public Locale retrieveLocale(String orcid) {
-        TypedQuery<Locale> query = entityManager.createQuery("select locale from ProfileEntity where orcid = :orcid", Locale.class);
+        TypedQuery<Locale> query = readOnlyEntityManager.createQuery("select locale from ProfileEntity where orcid = :orcid", Locale.class);
         query.setParameter("orcid", orcid);
         return query.getSingleResult();
     }
@@ -491,7 +491,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
 
     @Override
     public String retrievePrimaryAccountOrcid(String deprecatedOrcid) {
-        Query query = entityManager.createNativeQuery("select primary_record from profile where orcid = :orcid");
+        Query query = readOnlyEntityManager.createNativeQuery("select primary_record from profile where orcid = :orcid");
         query.setParameter("orcid", deprecatedOrcid);
         return (String) query.getSingleResult();
     }
@@ -543,7 +543,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
 
     @Override
     public Iso3166Country getCountry(String orcid) {
-        TypedQuery<Iso3166Country> query = entityManager.createQuery("select iso2_country from ProfileEntity where orcid = :orcid", Iso3166Country.class);
+        TypedQuery<Iso3166Country> query = readOnlyEntityManager.createQuery("select iso2_country from ProfileEntity where orcid = :orcid", Iso3166Country.class);
         query.setParameter("orcid", orcid);
         return query.getSingleResult();
     }
@@ -583,7 +583,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
     @Transactional
     @SuppressWarnings("unchecked")
     public List<ProfileEntity> findProfilesByOrcidType(OrcidType type) {
-        Query query = entityManager.createQuery("from ProfileEntity where profile_deactivation_date=NULL and orcidType=:type");
+        Query query = readOnlyEntityManager.createQuery("from ProfileEntity where profile_deactivation_date=NULL and orcidType=:type");
         query.setParameter("type", type);
         return (List<ProfileEntity>) query.getResultList();
     }
@@ -623,7 +623,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
 
     @Override
     public boolean getClaimedStatus(String orcid) {
-        Query query = entityManager.createNativeQuery("select claimed from profile where orcid=:orcid");
+        Query query = readOnlyEntityManager.createNativeQuery("select claimed from profile where orcid=:orcid");
         query.setParameter("orcid", orcid);
         return (Boolean) query.getSingleResult();
     }
@@ -637,7 +637,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
      * */
     @Override
     public ClientType getClientType(String orcid) {
-        TypedQuery<ClientType> query = entityManager.createQuery("select clientType from ClientDetailsEntity where id = :orcid", ClientType.class);
+        TypedQuery<ClientType> query = readOnlyEntityManager.createQuery("select clientType from ClientDetailsEntity where id = :orcid", ClientType.class);
         query.setParameter("orcid", orcid);
         List<ClientType> results = query.getResultList();
         return results.isEmpty() ? null : results.get(0);
@@ -652,7 +652,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
      * */
     @Override
     public GroupType getGroupType(String orcid) {
-        TypedQuery<GroupType> query = entityManager.createQuery("select groupType from ProfileEntity where orcid = :orcid", GroupType.class);
+        TypedQuery<GroupType> query = readOnlyEntityManager.createQuery("select groupType from ProfileEntity where orcid = :orcid", GroupType.class);
         query.setParameter("orcid", orcid);
         List<GroupType> results = query.getResultList();
         return results.isEmpty() ? null : results.get(0);

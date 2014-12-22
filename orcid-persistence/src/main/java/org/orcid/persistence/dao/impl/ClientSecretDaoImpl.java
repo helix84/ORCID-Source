@@ -73,7 +73,7 @@ public class ClientSecretDaoImpl extends GenericDaoImpl<ClientSecretEntity, Clie
      * */
     @Override
     public List<ClientSecretEntity> getClientSecretsByClientId(String clientId) {
-        TypedQuery<ClientSecretEntity> query = entityManager.createQuery("From ClientSecretEntity WHERE client_details_id=:clientId", ClientSecretEntity.class);
+        TypedQuery<ClientSecretEntity> query = readOnlyEntityManager.createQuery("From ClientSecretEntity WHERE client_details_id=:clientId", ClientSecretEntity.class);
         query.setParameter("clientId", clientId);
         return query.getResultList();
     }

@@ -21,10 +21,7 @@ import java.util.List;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import org.apache.commons.lang.StringUtils;
-import org.orcid.jaxb.model.message.Iso3166Country;
 import org.orcid.persistence.dao.ResearcherUrlDao;
-import org.orcid.persistence.jpa.entities.ProfileEntity;
 import org.orcid.persistence.jpa.entities.ResearcherUrlEntity;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +40,7 @@ public class ResearcherUrlDaoImpl extends GenericDaoImpl<ResearcherUrlEntity, Lo
     @Override
     @SuppressWarnings("unchecked")
     public List<ResearcherUrlEntity> getResearcherUrls(String orcid) {
-        Query query = entityManager.createQuery("FROM ResearcherUrlEntity WHERE orcid = :orcid");
+        Query query = readOnlyEntityManager.createQuery("FROM ResearcherUrlEntity WHERE orcid = :orcid");
         query.setParameter("orcid", orcid);
         return query.getResultList();
     }
@@ -68,7 +65,7 @@ public class ResearcherUrlDaoImpl extends GenericDaoImpl<ResearcherUrlEntity, Lo
      * */
     @Override
     public ResearcherUrlEntity getResearcherUrl(long id) {
-        TypedQuery<ResearcherUrlEntity> query = entityManager.createQuery("FROM ResearcherUrlEntity WHERE id = :id", ResearcherUrlEntity.class);
+        TypedQuery<ResearcherUrlEntity> query = readOnlyEntityManager.createQuery("FROM ResearcherUrlEntity WHERE id = :id", ResearcherUrlEntity.class);
         query.setParameter("id", id);
         return query.getSingleResult();
     }

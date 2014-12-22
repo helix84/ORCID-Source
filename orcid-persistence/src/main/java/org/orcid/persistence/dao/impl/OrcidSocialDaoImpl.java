@@ -55,7 +55,7 @@ public class OrcidSocialDaoImpl extends GenericDaoImpl<OrcidSocialEntity, OrcidS
 
     @Override
     public boolean isEnabled(String orcid, OrcidSocialType type) {
-        Query query = entityManager.createNativeQuery("SELECT * FROM orcid_social WHERE orcid=:orcid AND type=:type");
+        Query query = readOnlyEntityManager.createNativeQuery("SELECT * FROM orcid_social WHERE orcid=:orcid AND type=:type");
         query.setParameter("orcid", orcid);
         query.setParameter("type", type.name());
         try {
@@ -78,7 +78,7 @@ public class OrcidSocialDaoImpl extends GenericDaoImpl<OrcidSocialEntity, OrcidS
     @SuppressWarnings("unchecked")
     @Override
     public List<OrcidSocialEntity> getRecordsToTweet() {
-        Query query = entityManager.createNativeQuery(
+        Query query = readOnlyEntityManager.createNativeQuery(
                 "SELECT * FROM orcid_social where type='TWITTER' AND (last_run is NULL OR last_run < (NOW() - CAST('1' as INTERVAL HOUR)))", OrcidSocialEntity.class);
         return query.getResultList();
     }

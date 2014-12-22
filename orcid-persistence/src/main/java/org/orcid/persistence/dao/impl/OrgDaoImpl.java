@@ -39,7 +39,7 @@ public class OrgDaoImpl extends GenericDaoImpl<OrgEntity, Long> implements OrgDa
     @Override
     public List<AmbiguousOrgEntity> getAmbiguousOrgs(int firstResult, int maxResults) {
         // Order by ID so we can page through in a predictable way
-        TypedQuery<AmbiguousOrgEntity> query = entityManager.createQuery("from AmbiguousOrgEntity order by id", AmbiguousOrgEntity.class);
+        TypedQuery<AmbiguousOrgEntity> query = readOnlyEntityManager.createQuery("from AmbiguousOrgEntity order by id", AmbiguousOrgEntity.class);
         query.setFirstResult(firstResult);
         query.setMaxResults(maxResults);
         return query.getResultList();
@@ -47,7 +47,7 @@ public class OrgDaoImpl extends GenericDaoImpl<OrgEntity, Long> implements OrgDa
 
     @Override
     public List<OrgEntity> getOrgs(String searchTerm, int firstResult, int maxResults) {
-        TypedQuery<OrgEntity> query = entityManager.createQuery("from OrgEntity where lower(name) like lower(:searchTerm) || '%' order by name", OrgEntity.class);
+        TypedQuery<OrgEntity> query = readOnlyEntityManager.createQuery("from OrgEntity where lower(name) like lower(:searchTerm) || '%' order by name", OrgEntity.class);
         query.setParameter("searchTerm", searchTerm);
         query.setFirstResult(firstResult);
         query.setMaxResults(maxResults);
@@ -56,14 +56,14 @@ public class OrgDaoImpl extends GenericDaoImpl<OrgEntity, Long> implements OrgDa
     
     @Override
     public List<OrgEntity> getOrgsByName(String searchTerm) {
-    	TypedQuery<OrgEntity> query = entityManager.createQuery("from OrgEntity where lower(name) like lower(:searchTerm) order by name", OrgEntity.class);
+    	TypedQuery<OrgEntity> query = readOnlyEntityManager.createQuery("from OrgEntity where lower(name) like lower(:searchTerm) order by name", OrgEntity.class);
     	query.setParameter("searchTerm", searchTerm);
     	return query.getResultList();
     }
 
     @Override
     public OrgEntity findByNameCityRegionAndCountry(String name, String city, String region, Iso3166Country country) {
-        TypedQuery<OrgEntity> query = entityManager.createQuery(
+        TypedQuery<OrgEntity> query = readOnlyEntityManager.createQuery(
                 "from OrgEntity where name = :name and city = :city and (region = :region or (region is null and :region is null)) and country = :country",
                 OrgEntity.class);
         query.setParameter("name", name);

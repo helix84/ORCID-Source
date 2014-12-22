@@ -89,7 +89,7 @@ public class OrgAffiliationRelationDaoImpl extends GenericDaoImpl<OrgAffiliation
     @Override
     @Transactional
     public OrgAffiliationRelationEntity getOrgAffiliationRelation(String clientOrcid, String orgAffiliationRelationId) {
-        Query query = entityManager.createQuery("from OrgAffiliationRelationEntity where profile.id=:clientOrcid and id=:orgAffiliationRelationId");
+        Query query = readOnlyEntityManager.createQuery("from OrgAffiliationRelationEntity where profile.id=:clientOrcid and id=:orgAffiliationRelationId");
         query.setParameter("clientOrcid", clientOrcid);
         query.setParameter("orgAffiliationRelationId", Long.valueOf(orgAffiliationRelationId));
         return (OrgAffiliationRelationEntity) query.getSingleResult();

@@ -85,7 +85,7 @@ public class OrcidPropsDaoImpl extends GenericDaoImpl<OrcidPropsEntity, String> 
     @Override
     public boolean exists(String key) throws NonUniqueResultException {
         Assert.hasText(key, "Cannot look for empty keys");
-        Query query = entityManager.createQuery("FROM OrcidPropsEntity WHERE key=:key");
+        Query query = readOnlyEntityManager.createQuery("FROM OrcidPropsEntity WHERE key=:key");
         query.setParameter("key", key);
         try {
             query.getSingleResult();
@@ -100,7 +100,7 @@ public class OrcidPropsDaoImpl extends GenericDaoImpl<OrcidPropsEntity, String> 
     @Override
     public String getValue(String key) {
         Assert.hasText(key, "Cannot look for empty keys");
-        Query query = entityManager.createQuery("SELECT value FROM OrcidPropsEntity WHERE key=:key");
+        Query query = readOnlyEntityManager.createQuery("SELECT value FROM OrcidPropsEntity WHERE key=:key");
         query.setParameter("key", key);
         try {
             return (String) query.getSingleResult();

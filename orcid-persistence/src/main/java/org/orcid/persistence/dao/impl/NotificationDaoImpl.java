@@ -40,7 +40,7 @@ public class NotificationDaoImpl extends GenericDaoImpl<NotificationEntity, Long
 
     @Override
     public List<NotificationEntity> findByOrcid(String orcid, int firstResult, int maxResults) {
-        TypedQuery<NotificationEntity> query = entityManager.createQuery(
+        TypedQuery<NotificationEntity> query = readOnlyEntityManager.createQuery(
                 "from NotificationEntity where orcid = :orcid and archivedDate is null order by dateCreated desc", NotificationEntity.class);
         query.setParameter("orcid", orcid);
         query.setFirstResult(firstResult);
@@ -56,14 +56,14 @@ public class NotificationDaoImpl extends GenericDaoImpl<NotificationEntity, Long
 
     @Override
     public List<NotificationEntity> findUnsentByOrcid(String orcid) {
-        TypedQuery<NotificationEntity> query = entityManager.createQuery("from NotificationEntity where sentDate is null and orcid = :orcid", NotificationEntity.class);
+        TypedQuery<NotificationEntity> query = readOnlyEntityManager.createQuery("from NotificationEntity where sentDate is null and orcid = :orcid", NotificationEntity.class);
         query.setParameter("orcid", orcid);
         return query.getResultList();
     }
 
     @Override
     public int getUnreadCount(String orcid) {
-        TypedQuery<Long> query = entityManager.createQuery("select count(*) from NotificationEntity where readDate is null and archivedDate is null and orcid = :orcid", Long.class);
+        TypedQuery<Long> query = readOnlyEntityManager.createQuery("select count(*) from NotificationEntity where readDate is null and archivedDate is null and orcid = :orcid", Long.class);
         query.setParameter("orcid", orcid);
         return query.getSingleResult().intValue();
     }
@@ -75,14 +75,14 @@ public class NotificationDaoImpl extends GenericDaoImpl<NotificationEntity, Long
 
     @Override
     public List<String> findOrcidsWithNotificationsToSend(Date effectiveNow) {
-        TypedQuery<String> query = entityManager.createNamedQuery(NotificationEntity.FIND_ORCIDS_WITH_NOTIFICATIONS_TO_SEND, String.class);
+        TypedQuery<String> query = readOnlyEntityManager.createNamedQuery(NotificationEntity.FIND_ORCIDS_WITH_NOTIFICATIONS_TO_SEND, String.class);
         query.setParameter("effectiveNow", effectiveNow);
         return query.getResultList();
     }
 
     @Override
     public NotificationEntity findByOricdAndId(String orcid, Long id) {
-        TypedQuery<NotificationEntity> query = entityManager.createQuery("from NotificationEntity where orcid = :orcid and id = :id", NotificationEntity.class);
+        TypedQuery<NotificationEntity> query = readOnlyEntityManager.createQuery("from NotificationEntity where orcid = :orcid and id = :id", NotificationEntity.class);
         query.setParameter("orcid", orcid);
         query.setParameter("id", id);
         return query.getSingleResult();
